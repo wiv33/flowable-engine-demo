@@ -1,3 +1,9 @@
+# curl --user rest-admin:test http://localhost:8080/flowable-rest/service/management/engine
+GET http://localhost:8080/flowable-rest/service/management/engine
+Authorization: Basic rest-admin test
+
+
+###
 # curl --user rest-admin:test  -X POST -F "file=@holiday-request.bpmn20.xml" http://localhost:8080/flowable-rest/service/repository/deployments
 # @no-cookie-jar
 POST http://localhost:8080/flowable-rest/service/repository/deployments
