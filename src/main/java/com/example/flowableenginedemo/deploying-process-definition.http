@@ -1,0 +1,20 @@
+# curl --user rest-admin:test  -X POST -F "file=@holiday-request.bpmn20.xml" http://localhost:8080/flowable-rest/service/repository/deployments
+# @no-cookie-jar
+POST http://localhost:8080/flowable-rest/service/repository/deployments
+Authorization: Basic rest-admin test
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="holiday-request.bpmn20.xml"
+
+< holiday-request.bpmn20.xml
+--WebAppBoundary--
+
+###
+
+# curl --user rest-admin:test http://localhost:8080/flowable-rest/service/repository/process-definitions
+GET http://localhost:8080/flowable-rest/service/repository/process-definitions
+Authorization: Basic rest-admin test
+
+###
+
