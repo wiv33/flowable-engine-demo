@@ -1,15 +1,6 @@
 package com.example.flowableenginedemo;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig implements WebSecurityCustomizer {
+public class SecurityConfig {
 
 /*
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
@@ -29,6 +20,7 @@ public class SecurityConfig implements WebSecurityCustomizer {
 */
 
   // userDetailService
+/*
   @Bean
   public CustomUserDetailsService customUserDetailsService() {
     return new CustomUserDetailsService();
@@ -36,19 +28,25 @@ public class SecurityConfig implements WebSecurityCustomizer {
 
   @Bean
   public CustomReactiveAuthenticationManager customReactiveAuthenticationManager() {
-    return new CustomReactiveAuthenticationManager(customUserDetailsService());
+    return new CustomReactiveAuthenticationManager();
+  }
+*/
+
+
+/*
+  @Bean
+  public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
+    return http.authorizeExchange(authorizeExchangeSpec -> {
+
+          authorizeExchangeSpec.pathMatchers("/deploy/holiday").permitAll()
+              .pathMatchers("/**").permitAll()
+              .anyExchange().permitAll()
+          ;
+        })
+        .csrf().disable()
+        .authenticationManager(customReactiveAuthenticationManager())
+        .build();
   }
 
-  @Override
-  public void customize(WebSecurity web) {
-    web.ignoring().antMatchers("/deploy/holiday")
-        .antMatchers("/tasks")
-        .antMatchers("/tasks/assignee/{assignee}")
-        .antMatchers("/tasks/{taskIndex}/assignee/{assignee}")
-        .antMatchers("/tasks/{taskIndex}")
-        .antMatchers("/tasks/{taskIndex}/variables")
-        .antMatchers("/process/{processId}")
-    ;
-
-  }
+*/
 }

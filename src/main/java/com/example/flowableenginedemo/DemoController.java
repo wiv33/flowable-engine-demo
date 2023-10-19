@@ -1,6 +1,5 @@
 package com.example.flowableenginedemo;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -35,42 +35,51 @@ public class DemoController {
   // route changes to controller
 
   // change to controller
-  @GetMapping("/deploy/holiday")
-  public Deployment deployHoliday() throws JsonProcessingException {
+  @PostMapping("/deploy/holiday")
+  public Deployment deployHoliday() {
     return demoService.deployHoliday();
   }
 
+  @PostMapping("/process/assignee/{assignee}")
+  public String startProcess(@PathVariable String assignee,
+      @RequestParam String holidays,
+      @RequestParam String description) {
+    return demoService.startProcess(assignee, holidays, description);
+  }
+
+
   @GetMapping("/tasks")
-  public List<Map<String, Object>>  getTasks() throws JsonProcessingException {
+  public List<Map<String, Object>> getTasks() {
     return demoService.getTasks();
   }
 
   @GetMapping("/tasks/assignee/{assignee}")
-  public List<Map<String, Object>>  getTaskAssignee(@PathVariable String assignee) throws JsonProcessingException {
+  public List<Map<String, Object>> getTaskAssignee(@PathVariable String assignee) {
     return demoService.getTaskAssignee(assignee);
   }
 
   @PutMapping("/tasks/{taskIndex}/assignee/{assignee}")
-  public List<Map<String, Object>> changeTaskAssignee(@PathVariable String assignee, @PathVariable String taskIndex)
-      throws JsonProcessingException {
+  public List<Map<String, Object>> changeTaskAssignee(@PathVariable String assignee,
+      @PathVariable String taskIndex) {
     return demoService.changeTaskAssignee(assignee, taskIndex);
   }
 
   @PostMapping("/tasks/{taskIndex}")
-  public Map<String, Object> completeTask(@PathVariable String taskIndex) throws JsonProcessingException {
-    return demoService.completeTask(taskIndex);
+  public List<Map<String, Object>> completeTask(@PathVariable String taskIndex
+      , @RequestParam(required = false, defaultValue = "false") boolean approved) {
+    return demoService.completeTask(taskIndex, approved);
   }
 
+
   @GetMapping("/tasks/{taskIndex}/variables")
-  public String getTaskVariables(@PathVariable String taskIndex) throws JsonProcessingException {
+  public String getTaskVariables(@PathVariable String taskIndex) {
     return demoService.getTaskVariables(taskIndex);
   }
 
   @GetMapping("/process/{processId}")
-  public List<?> getProcessHistory(@PathVariable String processId) throws JsonProcessingException {
+  public List<?> getProcessHistory(@PathVariable String processId) {
     return demoService.getProcessHistory(processId);
   }
-
 
 
 }

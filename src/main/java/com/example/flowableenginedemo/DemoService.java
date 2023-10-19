@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.flowable.engine.ProcessEngine;
+import org.flowable.engine.TaskService;
 import org.flowable.engine.repository.Deployment;
+import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 import org.springframework.stereotype.Service;
 
@@ -53,9 +55,18 @@ public class DemoService {
         .map(DemoService::apply).collect(Collectors.toList()));
   }
 
-  public Map<String, Object> completeTask(String taskIndex) {
-    return processEngine.getTaskService().createTaskQuery().list().stream().map(DemoService::apply)
-        .collect(Collectors.toList()).get(Integer.parseInt(taskIndex));
+  public List<Map<String, Object>> completeTask(String taskIndex, boolean approved) {
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("approved", approved);
+
+    TaskService taskService = processEngine.getTaskService();
+    taskService.complete(taskIndex, variables);
+
+    return processEngine.getTaskService().createTaskQuery()
+        .list()
+        .stream()
+        .map(DemoService::apply)
+        .collect(Collectors.toList());
   }
 
   public String getTaskVariables(String taskIndex) {
@@ -66,5 +77,16 @@ public class DemoService {
     return Collections.singletonList(
         (processEngine.getHistoryService().createHistoricActivityInstanceQuery()
             .processInstanceId(processId).list()));
+  }
+
+  public String startProcess(String assignee, String holidays, String description) {
+
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("employee", assignee);
+    variables.put("nrOfHolidays", holidays);
+    variables.put("description", description);
+    ProcessInstance processInstance = processEngine.getRuntimeService()
+        .startProcessInstanceByKey("holidayRequest", variables);
+    return processInstance.getName();
   }
 }
