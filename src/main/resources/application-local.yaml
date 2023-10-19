@@ -46,7 +46,7 @@ spring:
     change-log: /org/flowable/app/db/liquibase/flowable-app-db-changelog.xml
 #    change-log: classpath:/org/flowable/app/db/liquibase/
     contexts: development, production
-    drop-first: true
+#    drop-first: true
     enabled: true
 #    labels: development
     liquibase-schema: public
@@ -56,3 +56,7 @@ spring:
 #    clear-check-sums: false
     database-change-log-lock-table: act_app_databasechangeloglock
     database-change-log-table: act_app_databasechangelog
+
+
+  main:
+    allow-bean-definition-overriding: true

@@ -1,25 +1,24 @@
-
 buildscript {
-	repositories {
-		mavenLocal()
-		maven { url 'https://maven.aliyun.com/repository/google/' }
-		maven { url 'https://maven.aliyun.com/repository/public/' }
-		maven { url 'https://maven.aliyun.com/repository/spring/' }
-		maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
-		maven { url 'https://maven.aliyun.com/repository/spring-plugin/' }
-		maven {
-			url "https://plugins.gradle.org/m2/"
-		}
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:2.7.16")
-		classpath "io.spring.gradle:dependency-management-plugin:1.0.15.RELEASE"
-	}
+    repositories {
+        mavenLocal()
+        maven { url 'https://maven.aliyun.com/repository/google/' }
+        maven { url 'https://maven.aliyun.com/repository/public/' }
+        maven { url 'https://maven.aliyun.com/repository/spring/' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
+        maven { url 'https://maven.aliyun.com/repository/spring-plugin/' }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.7.16")
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.15.RELEASE"
+    }
 }
 
 plugins {
-	id 'java'
+    id 'java'
 }
 
 apply plugin: "org.springframework.boot"
@@ -59,35 +58,40 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    // commons-io:commons-io:2.
-    implementation 'commons-io:commons-io:2.11.0'
-    // flowable-spring-boot-starter-rest
-    implementation 'org.flowable:flowable-spring-boot-starter-rest:6.7.0'
-    // mybatis
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
-    // net.javacrumbs.json-unit
-    implementation 'net.javacrumbs.json-unit:json-unit:2.24.0'
-    // spring-cloud-starter-function-context
-    implementation 'org.springframework.cloud:spring-cloud-function-context:3.2.6'
-    // spring-cloud-starter-function-web
-    implementation 'org.springframework.cloud:spring-cloud-starter-function-web:3.1.5'
-    // devtools
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    // spring-security and spring-security-test
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation 'org.springframework.security:spring-security-test'
+    // actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+//    implementation 'org.springframework.boot:spring-boot-starter-webflux:2.7.14'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.7.14'
 
+    // security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-web'
+    implementation 'org.springframework.security:spring-security-config'
+    // jackson
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.0'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.0'
+
+
+
+
+    implementation 'org.flowable:flowable-engine:6.7.0'
+//    runtimeOnly 'com.h2database:h2:2.1.214'
+
+    // postgresql
+    implementation 'org.postgresql:postgresql:42.3.1'
+
+    implementation('org.slf4j:slf4j-api:2.0.7')
+    implementation('org.slf4j:slf4j-log4j12:2.0.7')
 
     compileOnly 'org.projectlombok:lombok'
-    // mysql driver
-//    runtimeOnly 'mysql:mysql-connector-java:8.0.28'
-    runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
 }
 
 tasks.named('test') {
