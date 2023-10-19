@@ -1,7 +1,5 @@
 package com.example.flowableenginedemo;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,40 +30,39 @@ public class DemoService {
     return map;
   }
 
-  public Deployment deployHoliday() throws JsonProcessingException {
+  public Deployment deployHoliday() {
     return processEngine.getRepositoryService().createDeployment()
         .addClasspathResource("bpmns/holiday-request.bpmn20.xml").deploy();
   }
 
 
-  public List<Map<String, Object>> getTasks() throws JsonProcessingException {
+  public List<Map<String, Object>> getTasks() {
     return (processEngine.getTaskService().createTaskQuery().taskCandidateGroup("managers").list()
         .stream().map(DemoService::apply).collect(Collectors.toList()));
   }
 
-  public List<Map<String, Object>> getTaskAssignee(String assignee) throws JsonProcessingException {
+  public List<Map<String, Object>> getTaskAssignee(String assignee) {
     return (processEngine.getTaskService().createTaskQuery().taskAssignee(assignee).list().stream()
         .map(DemoService::apply).collect(Collectors.toList()));
   }
 
-  public List<Map<String, Object>> changeTaskAssignee(String assignee, String taskIndex)
-      throws JsonProcessingException {
+  public List<Map<String, Object>> changeTaskAssignee(String assignee, String taskIndex) {
     processEngine.getTaskService().setAssignee(taskIndex, assignee);
 
     return (processEngine.getTaskService().createTaskQuery().taskAssignee(assignee).list().stream()
         .map(DemoService::apply).collect(Collectors.toList()));
   }
 
-  public Map<String, Object>  completeTask(String taskIndex) throws JsonProcessingException {
+  public Map<String, Object> completeTask(String taskIndex) {
     return processEngine.getTaskService().createTaskQuery().list().stream().map(DemoService::apply)
-            .collect(Collectors.toList()).get(Integer.parseInt(taskIndex));
+        .collect(Collectors.toList()).get(Integer.parseInt(taskIndex));
   }
 
-  public String getTaskVariables(String taskIndex) throws JsonProcessingException {
+  public String getTaskVariables(String taskIndex) {
     return (processEngine.getTaskService().getVariables(taskIndex).toString());
   }
 
-  public List<?> getProcessHistory(String processId) throws JsonProcessingException {
+  public List<?> getProcessHistory(String processId) {
     return Collections.singletonList(
         (processEngine.getHistoryService().createHistoricActivityInstanceQuery()
             .processInstanceId(processId).list()));
