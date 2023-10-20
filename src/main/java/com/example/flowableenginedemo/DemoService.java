@@ -1,17 +1,25 @@
 package com.example.flowableenginedemo;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.flowable.bpmn.model.*;
+import org.flowable.bpmn.model.Process;
 import org.flowable.engine.ProcessEngine;
+import org.flowable.engine.RepositoryService;
 import org.flowable.engine.TaskService;
+import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 import org.springframework.stereotype.Service;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 
@@ -29,6 +37,8 @@ public class DemoService {
     map.put("processDefinitionId", s.getProcessDefinitionId());
     map.put("processVariables", s.getProcessVariables());
     map.put("taskLocalVariables", s.getTaskLocalVariables());
+    map.put("createTime", s.getCreateTime());
+    map.put("description", s.getDescription());
     return map;
   }
 
@@ -37,9 +47,93 @@ public class DemoService {
         .addClasspathResource("bpmns/holiday-request.bpmn20.xml").deploy();
   }
 
+  public Deployment deployProcess(String processName, String filename, String content) throws IOException {
 
-  public List<Map<String, Object>> getTasks() {
-    return (processEngine.getTaskService().createTaskQuery().taskCandidateGroup("managers").list()
+    File file = new File("C:\\Users\\12345678\\git\\flowable-engine-demo\\src\\main\\resources\\bpmns", filename);
+    if (!file.exists()) {
+      try {
+        file.createNewFile();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+      bw.write(content);
+      bw.flush();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
+    return processEngine.getRepositoryService()
+        .createDeployment()
+        .name(processName)
+        .addClasspathResource("bpmns/" + file.getName())
+//        .addInputStream(processName, Files.newInputStream(file.toPath()))
+//        .addBytes(processName, Files.readAllBytes(file.toPath()))
+//        .addString(processName, content)
+        .deploy();
+  }
+
+
+  public Deployment dynamicHoliday(String processName) {
+    StartEvent startEvent = new StartEvent();
+    startEvent.setId("startEvent");
+    SequenceFlow sequenceFlow = new SequenceFlow("startEvent", "approveTask");
+
+    ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
+    exclusiveGateway.setId("decision");
+
+    SequenceFlow sequenceFlow2 = new SequenceFlow("decision", "externalSystemCall");
+    SequenceFlow sequenceFlow3 = new SequenceFlow("decision", "sendRejectionMail");
+    SequenceFlow sequenceFlow4 = new SequenceFlow("externalSystemCall", "holidayApprovedTask");
+    SequenceFlow sequenceFlow5 = new SequenceFlow("holidayApprovedTask", "approveEnd");
+
+    EndEvent endEvent = new EndEvent();
+    endEvent.setId("approveEnd");
+
+    BpmnModel bpmnModel = new BpmnModel();
+    org.flowable.bpmn.model.Process process = new Process();
+    bpmnModel.addProcess(process);
+    process.setId(processName);
+
+    process.addFlowElement(startEvent);
+    process.addFlowElement(sequenceFlow);
+    process.addFlowElement(exclusiveGateway);
+    process.addFlowElement(sequenceFlow2);
+    process.addFlowElement(sequenceFlow3);
+    process.addFlowElement(sequenceFlow4);
+    process.addFlowElement(sequenceFlow5);
+    process.addFlowElement(endEvent);
+
+    RepositoryService repositoryService = processEngine.getRepositoryService();
+    return repositoryService
+        .createDeployment()
+        .addBpmnModel(processName, bpmnModel)
+        .deploy();
+  }
+
+  public String startProcess(String processDefKey, String assignee, String holidays, String description) {
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("employee", assignee);
+    variables.put("nrOfHolidays", holidays);
+    variables.put("description", description);
+    ProcessInstance processInstance = processEngine.getRuntimeService()
+        .startProcessInstanceByKey(processDefKey, variables);
+
+    return processInstance.getName();
+  }
+
+  public String startProcess(String processDefKey, Map<String, Object> params) {
+    ProcessInstance processInstance = processEngine.getRuntimeService()
+        .startProcessInstanceByKey(processDefKey, params);
+    return processInstance.getName();
+  }
+
+
+  public List<Map<String, Object>> getTasks(Groups groups) {
+    return (processEngine.getTaskService().createTaskQuery()
+        .taskCandidateGroup(groups.name().toLowerCase(Locale.ROOT)).list()
         .stream().map(DemoService::apply).collect(Collectors.toList()));
   }
 
@@ -73,20 +167,16 @@ public class DemoService {
     return (processEngine.getTaskService().getVariables(taskIndex).toString());
   }
 
-  public List<?> getProcessHistory(String processId) {
-    return Collections.singletonList(
-        (processEngine.getHistoryService().createHistoricActivityInstanceQuery()
-            .processInstanceId(processId).list()));
+  public List<HistoricActivityInstance> getProcessHistory(String processId) {
+    return processEngine.getHistoryService()
+        .createHistoricActivityInstanceQuery()
+        .processInstanceId(processId)
+        .list();
   }
 
-  public String startProcess(String assignee, String holidays, String description) {
 
-    Map<String, Object> variables = new HashMap<>();
-    variables.put("employee", assignee);
-    variables.put("nrOfHolidays", holidays);
-    variables.put("description", description);
-    ProcessInstance processInstance = processEngine.getRuntimeService()
-        .startProcessInstanceByKey("holidayRequest", variables);
-    return processInstance.getName();
+  @Getter
+  public enum Groups {
+    MANAGERS, EDITORS
   }
 }

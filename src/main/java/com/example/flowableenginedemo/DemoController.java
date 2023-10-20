@@ -1,16 +1,17 @@
 package com.example.flowableenginedemo;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.flowable.engine.history.HistoricActivityInstance;
+import org.flowable.engine.repository.Deployment;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
-import org.flowable.engine.repository.Deployment;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class DemoController {
@@ -35,22 +36,48 @@ public class DemoController {
   // route changes to controller
 
   // change to controller
-  @PostMapping("/deploy/holiday")
+  @PostMapping("/process/holiday")
   public Deployment deployHoliday() {
     return demoService.deployHoliday();
   }
 
-  @PostMapping("/process/assignee/{assignee}")
-  public String startProcess(@PathVariable String assignee,
-      @RequestParam String holidays,
-      @RequestParam String description) {
-    return demoService.startProcess(assignee, holidays, description);
+  @PostMapping(value = "/process/{processName}/filename/{filename}", consumes = MediaType.APPLICATION_XML_VALUE)
+  public Deployment deployProcess(@PathVariable String processName,
+                                  @PathVariable String filename,
+                                  @RequestBody String content) throws IOException {
+    log.debug("request process name: {}, content : {}", processName, content);
+    return demoService.deployProcess(processName, filename, content);
+  }
+
+  @PostMapping(value = "/process/{processName}/dynamic")
+  public Deployment dynamicDeployProcess(@PathVariable String processName) {
+    log.debug("request process name: {}", processName);
+    return demoService.dynamicHoliday(processName);
+  }
+
+  @PostMapping("/process/{processDefKey}/assignee/{assignee}")
+  public String startProcess(@PathVariable String processDefKey,
+                             @PathVariable String assignee,
+                             @RequestParam String holidays,
+                             @RequestParam String description) {
+    return demoService.startProcess(processDefKey, assignee, holidays, description);
+  }
+
+  @PostMapping("/process/{processDefKey}")
+  public String startProcessByParam(@PathVariable String processDefKey,
+                                    @RequestParam Map<String, Object> params) {
+    return demoService.startProcess(processDefKey, params);
+  }
+
+  @GetMapping("/process/{processId}")
+  public List<HistoricActivityInstance> getProcessHistory(@PathVariable String processId) {
+    return demoService.getProcessHistory(processId);
   }
 
 
-  @GetMapping("/tasks")
-  public List<Map<String, Object>> getTasks() {
-    return demoService.getTasks();
+  @GetMapping("/tasks/{groups}")
+  public List<Map<String, Object>> getTasks(@PathVariable DemoService.Groups groups) {
+    return demoService.getTasks(groups);
   }
 
   @GetMapping("/tasks/assignee/{assignee}")
@@ -60,13 +87,13 @@ public class DemoController {
 
   @PutMapping("/tasks/{taskIndex}/assignee/{assignee}")
   public List<Map<String, Object>> changeTaskAssignee(@PathVariable String assignee,
-      @PathVariable String taskIndex) {
+                                                      @PathVariable String taskIndex) {
     return demoService.changeTaskAssignee(assignee, taskIndex);
   }
 
   @PostMapping("/tasks/{taskIndex}")
-  public List<Map<String, Object>> completeTask(@PathVariable String taskIndex
-      , @RequestParam(required = false, defaultValue = "false") boolean approved) {
+  public List<Map<String, Object>> completeTask(@PathVariable String taskIndex,
+                                                @RequestParam(required = false, defaultValue = "false") boolean approved) {
     return demoService.completeTask(taskIndex, approved);
   }
 
@@ -74,11 +101,6 @@ public class DemoController {
   @GetMapping("/tasks/{taskIndex}/variables")
   public String getTaskVariables(@PathVariable String taskIndex) {
     return demoService.getTaskVariables(taskIndex);
-  }
-
-  @GetMapping("/process/{processId}")
-  public List<?> getProcessHistory(@PathVariable String processId) {
-    return demoService.getProcessHistory(processId);
   }
 
 
