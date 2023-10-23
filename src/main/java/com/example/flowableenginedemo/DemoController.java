@@ -41,12 +41,11 @@ public class DemoController {
     return demoService.deployHoliday();
   }
 
-  @PostMapping(value = "/process/{processName}/filename/{filename}", consumes = MediaType.APPLICATION_XML_VALUE)
+  @PostMapping(value = "/process/{processName}", consumes = MediaType.APPLICATION_XML_VALUE)
   public Deployment deployProcess(@PathVariable String processName,
-                                  @PathVariable String filename,
-                                  @RequestBody String content) throws IOException {
+                                  @RequestBody String content) {
     log.debug("request process name: {}, content : {}", processName, content);
-    return demoService.deployProcess(processName, filename, content);
+    return demoService.deployProcess(processName, content);
   }
 
   @PostMapping(value = "/process/{processName}/dynamic")

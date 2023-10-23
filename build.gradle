@@ -68,18 +68,18 @@ dependencies {
 //    implementation 'org.springframework.security:spring-security-web'
 //    implementation 'org.springframework.security:spring-security-config'
     // jackson
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.1'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.13.0'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.0'
 
 
 
 
-    implementation 'org.flowable:flowable-engine:6.7.0'
+    implementation 'org.flowable:flowable-engine:6.8.0'
 //    runtimeOnly 'com.h2database:h2:2.1.214'
 
     // postgresql
-    implementation 'org.postgresql:postgresql:42.3.1'
+    implementation 'org.postgresql:postgresql:42.3.8'
 
     implementation('org.slf4j:slf4j-api:2.0.7')
     implementation('org.slf4j:slf4j-log4j12:2.0.7')

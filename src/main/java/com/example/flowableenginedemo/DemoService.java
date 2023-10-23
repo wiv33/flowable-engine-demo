@@ -2,8 +2,8 @@ package com.example.flowableenginedemo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.flowable.bpmn.model.*;
 import org.flowable.bpmn.model.Process;
+import org.flowable.bpmn.model.*;
 import org.flowable.engine.ProcessEngine;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.TaskService;
@@ -13,8 +13,6 @@ import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +25,7 @@ import java.util.stream.Collectors;
 public class DemoService {
 
   private final ProcessEngine processEngine;
+  private static final String POST_FIX = ".bpmn20.xml";
 
   private static Map<String, Object> apply(Task s) {
     Map<String, Object> map = new HashMap<>();
@@ -47,31 +46,17 @@ public class DemoService {
         .addClasspathResource("bpmns/holiday-request.bpmn20.xml").deploy();
   }
 
-  public Deployment deployProcess(String processName, String filename, String content) throws IOException {
-
-    File file = new File("C:\\Users\\12345678\\git\\flowable-engine-demo\\src\\main\\resources\\bpmns", filename);
-    if (!file.exists()) {
-      try {
-        file.createNewFile();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-      bw.write(content);
-      bw.flush();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-
+  public Deployment deployProcess(String processName, String content) {
     return processEngine.getRepositoryService()
         .createDeployment()
         .name(processName)
-        .addClasspathResource("bpmns/" + file.getName())
+        .key(processName)
+        .tenantId("hanwha")
+        .category("http://www.flowable.org/processdef")
+//        .addClasspathResource("bpmns/" + file.getName())
 //        .addInputStream(processName, Files.newInputStream(file.toPath()))
 //        .addBytes(processName, Files.readAllBytes(file.toPath()))
-//        .addString(processName, content)
+        .addString(String.format("%s%s", processName, POST_FIX), content)
         .deploy();
   }
 
@@ -109,7 +94,7 @@ public class DemoService {
     RepositoryService repositoryService = processEngine.getRepositoryService();
     return repositoryService
         .createDeployment()
-        .addBpmnModel(processName, bpmnModel)
+        .addBpmnModel(processName + POST_FIX, bpmnModel)
         .deploy();
   }
 
