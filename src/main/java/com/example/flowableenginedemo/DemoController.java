@@ -48,10 +48,11 @@ public class DemoController {
     return demoService.deployProcess(processName, content);
   }
 
-  @PostMapping(value = "/process/{processName}/dynamic")
-  public Deployment dynamicDeployProcess(@PathVariable String processName) {
-    log.debug("request process name: {}", processName);
-    return demoService.dynamicHoliday(processName);
+  @PostMapping(value = "/process/{processName}/assignee/{assignee}/dynamic")
+  public Deployment dynamicDeployProcess(@PathVariable String processName,
+                                         @PathVariable String assignee) {
+    log.debug("request process name: {}, assignee: {}", processName, assignee);
+    return demoService.dynamicHoliday(processName, assignee);
   }
 
   @PostMapping("/process/{processDefKey}/assignee/{assignee}")

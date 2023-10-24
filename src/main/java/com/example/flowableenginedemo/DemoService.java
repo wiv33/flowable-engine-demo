@@ -13,11 +13,10 @@ import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.example.flowableenginedemo.DemoService.Groups.MANAGERS;
 
 @RequiredArgsConstructor
 
@@ -61,21 +60,39 @@ public class DemoService {
   }
 
 
-  public Deployment dynamicHoliday(String processName) {
+  public Deployment dynamicHoliday(String processName, String assignee) {
     StartEvent startEvent = new StartEvent();
     startEvent.setId("startEvent");
     SequenceFlow sequenceFlow = new SequenceFlow("startEvent", "approveTask");
 
+    UserTask approveTask = new UserTask();
+    approveTask.setId("approveTask");
+    approveTask.setCandidateGroups(Collections.singletonList(MANAGERS.name()));
+
     ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
     exclusiveGateway.setId("decision");
 
-    SequenceFlow sequenceFlow2 = new SequenceFlow("decision", "externalSystemCall");
-    SequenceFlow sequenceFlow3 = new SequenceFlow("decision", "sendRejectionMail");
-    SequenceFlow sequenceFlow4 = new SequenceFlow("externalSystemCall", "holidayApprovedTask");
-    SequenceFlow sequenceFlow5 = new SequenceFlow("holidayApprovedTask", "approveEnd");
+    ServiceTask st = new ServiceTask();
+    st.setId("externalSystemCall");
+    st.setType("com.example.flowableenginedemo.CallExternalSystemDelegate");
+    st.setName("external System Call");
+
+    ServiceTask st2 = new ServiceTask();
+    st2.setId("sendRejectMail");
+    st2.setType("com.example.flowableenginedemo.SendRejectMail");
+    st2.setName("send rejection mail");
 
     EndEvent endEvent = new EndEvent();
     endEvent.setId("approveEnd");
+
+    ServiceTask holidayApprovedTask = new ServiceTask();
+    holidayApprovedTask.setId("holidayApprovedTask");
+    holidayApprovedTask.setType(SendRejectMail.class.getName());
+
+    SequenceFlow sequenceFlow2 = new SequenceFlow("decision", "externalSystemCall");
+    SequenceFlow sequenceFlow3 = new SequenceFlow("decision", "sendRejectMail");
+    SequenceFlow sequenceFlow4 = new SequenceFlow("externalSystemCall", "holidayApprovedTask");
+    SequenceFlow sequenceFlow5 = new SequenceFlow("holidayApprovedTask", "approveEnd");
 
     BpmnModel bpmnModel = new BpmnModel();
     org.flowable.bpmn.model.Process process = new Process();
@@ -83,15 +100,20 @@ public class DemoService {
     process.setId(processName);
 
     process.addFlowElement(startEvent);
+    process.addFlowElement(approveTask);
     process.addFlowElement(sequenceFlow);
     process.addFlowElement(exclusiveGateway);
+    process.addFlowElement(holidayApprovedTask);
     process.addFlowElement(sequenceFlow2);
     process.addFlowElement(sequenceFlow3);
     process.addFlowElement(sequenceFlow4);
     process.addFlowElement(sequenceFlow5);
+    process.addFlowElement(st);
+    process.addFlowElement(st2);
     process.addFlowElement(endEvent);
 
     RepositoryService repositoryService = processEngine.getRepositoryService();
+
     return repositoryService
         .createDeployment()
         .addBpmnModel(processName + POST_FIX, bpmnModel)
