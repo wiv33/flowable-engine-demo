@@ -1,18 +1,19 @@
 package com.example.flowableenginedemo;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.flowable.engine.ProcessEngine;
 import org.flowable.engine.repository.Deployment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @SpringBootTest
 class DemoServiceTest {
@@ -22,9 +23,12 @@ class DemoServiceTest {
 
   StringBuilder sb;
 
+  @Autowired
+  DemoService demoService;
+
   @BeforeEach
   void setUp() throws FileNotFoundException {
-    String source = "C:\\Users\\12345678\\git\\flowable-engine-demo\\src\\main\\resources\\bpmns\\holiday-request.bpmn20.xml";
+    String source = "/Users/auto/github/flowable-examples/demo/demo-introducing-machine-learning/flowable-engine-demo/src/main/resources/bpmns/holiday-request.bpmn20.xml";
 
     String s;
     sb = new StringBuilder();
@@ -64,5 +68,20 @@ class DemoServiceTest {
         .collect(Collectors.toList());
 
     list.forEach(System.out::println);
+  }
+
+  @Test
+  void testDeployByLowApi() {
+    Deployment holidayRequest = demoService.dynamicHoliday2("HolidayRequest", new ParallelDto(
+        Arrays.asList("ps1", "ps2"), "final"));
+    System.out.println("holidayRequest = " + holidayRequest);
+
+    String s = demoService.startProcess("HolidayRequest", "12345678", "3", "hello world ps");
+    System.out.println("s = " + s);
+    List<Map<String, Object>> taskAssignee = demoService.getTaskAssignee("12345678");
+
+    taskAssignee.forEach(task ->
+        demoService.completeTask(task.get("id").toString(), true));
+
   }
 }

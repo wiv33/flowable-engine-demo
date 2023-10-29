@@ -1,15 +1,19 @@
 package com.example.flowableenginedemo;
 
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.repository.Deployment;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -48,11 +52,11 @@ public class DemoController {
     return demoService.deployProcess(processName, content);
   }
 
-  @PostMapping(value = "/process/{processName}/assignee/{assignee}/dynamic")
+  @PostMapping(value = "/process/{processName}/dynamic")
   public Deployment dynamicDeployProcess(@PathVariable String processName,
-                                         @PathVariable String assignee) {
-    log.debug("request process name: {}, assignee: {}", processName, assignee);
-    return demoService.dynamicHoliday(processName, assignee);
+                                         @RequestBody ParallelDto parallelDto) {
+    log.debug("request process name: {}, assignee: {}", processName, parallelDto);
+    return demoService.dynamicHoliday2(processName, parallelDto);
   }
 
   @PostMapping("/process/{processDefKey}/assignee/{assignee}")
