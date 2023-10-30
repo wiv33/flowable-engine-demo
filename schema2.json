@@ -1,7 +1,6 @@
 {
   "processId": "holidayRequest",
   "processName": "Holiday Request",
-  "isExecutable": true,
   "tenantId": "hanwha",
   "key": "",
   "category": "",
@@ -26,8 +25,13 @@
       "id": "fork",
       "addresses": [
         {
-          "source": "startEvent",
+          "source": "fork",
           "target": "parallel1",
+          "expression": ""
+        },
+        {
+          "source": "fork",
+          "target": "parallel2",
           "expression": ""
         }
       ],
@@ -40,7 +44,7 @@
       "id": "parallel1",
       "addresses": [
         {
-          "source": "fork",
+          "source": "parallel1",
           "target": "join",
           "expression": ""
         }
@@ -56,7 +60,7 @@
       "id": "parallel2",
       "addresses": [
         {
-          "source": "fork",
+          "source": "parallel2",
           "target": "join",
           "expression": ""
         }
@@ -72,12 +76,7 @@
       "id": "join",
       "addresses": [
         {
-          "source": "parallel1",
-          "target": "approvedTask",
-          "expression": ""
-        },
-        {
-          "source": "parallel2",
+          "source": "join",
           "target": "approvedTask",
           "expression": ""
         }
@@ -91,7 +90,7 @@
       "id": "approvedTask",
       "addresses": [
         {
-          "source": "join",
+          "source": "approvedTask",
           "target": "decision",
           "expression": ""
         }
@@ -104,7 +103,18 @@
     {
       "javaType": "EXCLUSIVE_GATEWAY",
       "id": "decision",
-      "addresses": [],
+      "addresses": [
+        {
+          "source": "decision",
+          "target": "externalSystemCall",
+          "expression": "${approved}"
+        },
+        {
+          "source": "decision",
+          "target": "sendRejectMail",
+          "expression": "${!approved}"
+        }
+      ],
       "flowableVariables": {},
       "taskVariable": {}
     },
@@ -114,7 +124,7 @@
       "name": "external System Call",
       "addresses": [
         {
-          "source": "decision",
+          "source": "externalSystemCall",
           "target": "holidayApprovedTask",
           "expression": "${approved}"
         }
@@ -131,7 +141,7 @@
       "name": "finally approved holiday",
       "addresses": [
         {
-          "source": "externalSystemCall",
+          "source": "holidayApprovedTask",
           "target": "approveEnd",
           "expression": ""
         }
@@ -147,7 +157,7 @@
       "name": "send reject mail",
       "addresses": [
         {
-          "source": "decision",
+          "source": "sendRejectMail",
           "target": "approveEnd",
           "expression": "${!approved}"
         }
