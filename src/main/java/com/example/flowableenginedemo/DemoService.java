@@ -2,6 +2,7 @@ package com.example.flowableenginedemo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.*;
 import org.flowable.engine.ProcessEngine;
@@ -63,11 +64,11 @@ public class DemoService {
   public Deployment dynamicHoliday(String processName, String assignee) {
     StartEvent startEvent = new StartEvent();
     startEvent.setId("startEvent");
-    SequenceFlow sequenceFlow = new SequenceFlow("startEvent", "approveTask");
 
     UserTask approveTask = new UserTask();
     approveTask.setId("approveTask");
     approveTask.setCandidateGroups(Collections.singletonList(MANAGERS.name()));
+    SequenceFlow sequenceFlow = new SequenceFlow("startEvent", "approveTask");
 
     ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
     exclusiveGateway.setId("decision");
@@ -125,6 +126,12 @@ public class DemoService {
     variables.put("employee", assignee);
     variables.put("nrOfHolidays", holidays);
     variables.put("description", description);
+    if (StringUtils.isNumeric(processDefKey)) {
+      return processEngine.getRuntimeService()
+          .startProcessInstanceById(processDefKey, variables)
+          .getName();
+    }
+
     ProcessInstance processInstance = processEngine.getRuntimeService()
         .startProcessInstanceByKey(processDefKey, variables);
 
@@ -141,19 +148,25 @@ public class DemoService {
   public List<Map<String, Object>> getTasks(Groups groups) {
     return (processEngine.getTaskService().createTaskQuery()
         .taskCandidateGroup(groups.name().toLowerCase(Locale.ROOT)).list()
-        .stream().map(DemoService::apply).collect(Collectors.toList()));
+        .stream().map(DemoService::apply)
+        .collect(Collectors.toList()));
   }
 
   public List<Map<String, Object>> getTaskAssignee(String assignee) {
-    return (processEngine.getTaskService().createTaskQuery().taskAssignee(assignee).list().stream()
-        .map(DemoService::apply).collect(Collectors.toList()));
+    return (processEngine.getTaskService().createTaskQuery()
+        .taskAssignee(assignee).list().stream()
+        .map(DemoService::apply)
+        .collect(Collectors.toList()));
   }
 
   public List<Map<String, Object>> changeTaskAssignee(String assignee, String taskIndex) {
     processEngine.getTaskService().setAssignee(taskIndex, assignee);
 
-    return (processEngine.getTaskService().createTaskQuery().taskAssignee(assignee).list().stream()
-        .map(DemoService::apply).collect(Collectors.toList()));
+    return processEngine.getTaskService().createTaskQuery()
+        .taskAssignee(assignee).list()
+        .stream()
+        .map(DemoService::apply)
+        .collect(Collectors.toList());
   }
 
   public List<Map<String, Object>> completeTask(String taskIndex, boolean approved) {
@@ -171,7 +184,7 @@ public class DemoService {
   }
 
   public String getTaskVariables(String taskIndex) {
-    return (processEngine.getTaskService().getVariables(taskIndex).toString());
+    return processEngine.getTaskService().getVariables(taskIndex).toString();
   }
 
   public List<HistoricActivityInstance> getProcessHistory(String processId) {

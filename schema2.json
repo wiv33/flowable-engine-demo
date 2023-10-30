@@ -1,0 +1,170 @@
+{
+  "processId": "holidayRequest",
+  "processName": "Holiday Request",
+  "isExecutable": true,
+  "tenantId": "hanwha",
+  "key": "",
+  "category": "",
+  "tasks": [
+    {
+      "javaType": "START_EVENT",
+      "name": "",
+      "id": "startEvent",
+      "addresses": [
+        {
+          "source": "startEvent",
+          "target": "fork",
+          "expression": ""
+        }
+      ],
+      "flowableVariables": {},
+      "taskVariables": {}
+    },
+    {
+      "javaType": "PARALLEL_GATEWAY",
+      "name": "started accumulate comment from managers",
+      "id": "fork",
+      "addresses": [
+        {
+          "source": "startEvent",
+          "target": "parallel1",
+          "expression": ""
+        }
+      ],
+      "flowableVariables": {},
+      "taskVariables": {}
+    },
+    {
+      "javaType": "USER_TASK",
+      "name": "parallel 1",
+      "id": "parallel1",
+      "addresses": [
+        {
+          "source": "fork",
+          "target": "join",
+          "expression": ""
+        }
+      ],
+      "flowableVariables": {},
+      "taskVariables": {
+        "assignee": "ps1"
+      }
+    },
+    {
+      "javaType": "USER_TASK",
+      "name": "parallel 2",
+      "id": "parallel2",
+      "addresses": [
+        {
+          "source": "fork",
+          "target": "join",
+          "expression": ""
+        }
+      ],
+      "flowableVariables": {},
+      "taskVariables": {
+        "assignee": "ps2"
+      }
+    },
+    {
+      "javaType": "PARALLEL_GATEWAY",
+      "name": "joining accumulate comment from managers",
+      "id": "join",
+      "addresses": [
+        {
+          "source": "parallel1",
+          "target": "approvedTask",
+          "expression": ""
+        },
+        {
+          "source": "parallel2",
+          "target": "approvedTask",
+          "expression": ""
+        }
+      ],
+      "flowableVariables": {},
+      "taskVariables": {}
+    },
+    {
+      "javaType": "USER_TASK",
+      "name": "review comments",
+      "id": "approvedTask",
+      "addresses": [
+        {
+          "source": "join",
+          "target": "decision",
+          "expression": ""
+        }
+      ],
+      "flowableVariables": {},
+      "taskVariables": {
+        "groupCandidate": "MANAGERS"
+      }
+    },
+    {
+      "javaType": "EXCLUSIVE_GATEWAY",
+      "id": "decision",
+      "addresses": [],
+      "flowableVariables": {},
+      "taskVariable": {}
+    },
+    {
+      "javaType": "SERVICE_TASK",
+      "id": "externalSystemCall",
+      "name": "external System Call",
+      "addresses": [
+        {
+          "source": "decision",
+          "target": "holidayApprovedTask",
+          "expression": "${approved}"
+        }
+      ],
+      "flowableVariables": {
+        "implementationType": "class",
+        "implementation": "com.hanwha.workflow.delegate.CallExternalSystemDelegate"
+      },
+      "taskVariable": {}
+    },
+    {
+      "javaType": "USER_TASK",
+      "id": "holidayApprovedTask",
+      "name": "finally approved holiday",
+      "addresses": [
+        {
+          "source": "externalSystemCall",
+          "target": "approveEnd",
+          "expression": ""
+        }
+      ],
+      "flowableVariables": {},
+      "taskVariable": {
+        "assignee": "final"
+      }
+    },
+    {
+      "javaType": "SERVICE_TASK",
+      "id": "sendRejectMail",
+      "name": "send reject mail",
+      "addresses": [
+        {
+          "source": "decision",
+          "target": "approveEnd",
+          "expression": "${!approved}"
+        }
+      ],
+      "flowableVariables": {
+        "implementationType": "class",
+        "implementation": "com.hanwha.workflow.delegate.SendRejectMail"
+      },
+      "taskVariable": {}
+    },
+    {
+      "javaType": "END_EVENT",
+      "id": "approveEnd",
+      "name": "End Process of a Holiday request",
+      "addresses": [],
+      "flowableVariables": {},
+      "taskVariable": {}
+    }
+  ]
+}

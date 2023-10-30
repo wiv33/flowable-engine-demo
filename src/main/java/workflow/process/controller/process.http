@@ -1,0 +1,16 @@
+
+
+### deploy process: Java low api 활용
+POST {{host}}/v1/process/{{processName}}/dynamic
+Content-Type: application/json
+
+{
+    "parallelAssignee": [
+        "ps3",
+        "ps4"
+    ],
+    "finalAssignee": "final2"
+}
+
+###
+
