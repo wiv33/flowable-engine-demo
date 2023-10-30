@@ -21,7 +21,10 @@ spring:
       allow-pool-suspension: false
 #      jdbc-url: jdbc:mysql://psawesome.xyz:53306/flowable?useSSL=false&useUnicode=true&characterEncoding=utf8
     url: jdbc:postgresql://psawesome.xyz:31907/flowable
-#    url: jdbc:mysql://psawesome.xyz:53306/flowable?useSSL=false&useUnicode=true&characterEncoding=utf8
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: powerful090
+  #    url: jdbc:mysql://psawesome.xyz:53306/flowable?useSSL=false&useUnicode=true&characterEncoding=utf8
   jpa:
     open-in-view: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect

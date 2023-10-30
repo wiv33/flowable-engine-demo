@@ -52,13 +52,6 @@ public class DemoController {
     return demoService.deployProcess(processName, content);
   }
 
-  @PostMapping(value = "/process/{processName}/dynamic")
-  public Deployment dynamicDeployProcess(@PathVariable String processName,
-                                         @RequestBody ParallelDto parallelDto) {
-    log.debug("request process name: {}, assignee: {}", processName, parallelDto);
-    return demoService.dynamicHoliday2(processName, parallelDto);
-  }
-
   @PostMapping("/process/{processDefKey}/assignee/{assignee}")
   public String startProcess(@PathVariable String processDefKey,
                              @PathVariable String assignee,
