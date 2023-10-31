@@ -1,14 +1,15 @@
 package com.hanwha.workflow.domain;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.flowable.bpmn.model.FlowElement;
 import org.flowable.bpmn.model.SequenceFlow;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,14 +27,17 @@ public class HTask {
   // 1. 자신의 Type을 기준으로 Point, SequenceFlow를 만들 책임이 있다.
 
   public List<SequenceFlow> incomingToSequenceFlow() {
-    System.out.println("############ start : javaType = " + javaType);
-    return this.addresses.stream()
-        .map(s -> {
-          System.out.println(s.toString());
-          SequenceFlow flow = new SequenceFlow(s.getSource(), s.getTarget());
-          flow.setConditionExpression(s.getExpression()); // 해당 조건에 따라 분기를 타기도 함.
-          return flow;
-        }).collect(Collectors.toList());
+    System.out.println("############ Make flow : javaType = " + javaType);
+    // 해당 조건에 따라 분기를 타기도 함.
+    List<SequenceFlow> list = new ArrayList<>();
+    for (HFlowElement address : this.addresses) {
+      System.out.println(address.toString());
+      SequenceFlow flow = new SequenceFlow(address.getSource(), address.getTarget());
+      flow.setConditionExpression(address.getConditionExpression()); // 해당 조건에 따라 분기를 타기도 함.
+      SequenceFlow apply = flow;
+      list.add(apply);
+    }
+    return list;
   }
 
   public FlowElement makeFlow() {

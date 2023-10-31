@@ -1,29 +1,23 @@
 package com.hanwha.workflow.process.service;
 
-import static com.hanwha.workflow.constants.BpmnConstant.POST_FIX;
-import static org.flowable.bpmn.model.ImplementationType.IMPLEMENTATION_TYPE_CLASS;
-
 import com.hanwha.workflow.domain.HProcess;
 import com.hanwha.workflow.domain.ParallelDto;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.flowable.bpmn.model.BpmnModel;
-import org.flowable.bpmn.model.EndEvent;
-import org.flowable.bpmn.model.ExclusiveGateway;
-import org.flowable.bpmn.model.ExtensionAttribute;
-import org.flowable.bpmn.model.ParallelGateway;
 import org.flowable.bpmn.model.Process;
-import org.flowable.bpmn.model.SequenceFlow;
-import org.flowable.bpmn.model.ServiceTask;
-import org.flowable.bpmn.model.StartEvent;
-import org.flowable.bpmn.model.UserTask;
+import org.flowable.bpmn.model.*;
 import org.flowable.engine.ProcessEngine;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.repository.Deployment;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
+import static com.hanwha.workflow.constants.BpmnConstant.CATEGORY;
+import static com.hanwha.workflow.constants.BpmnConstant.POST_FIX;
+import static org.flowable.bpmn.model.ImplementationType.IMPLEMENTATION_TYPE_CLASS;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -39,14 +33,15 @@ public class DynamicDeployService {
 
     return processEngine.getRepositoryService()
         .createDeployment()
-        .tenantId(hProcess.getTenantId())
-        .key(hProcess.getProcessId())
+//        .tenantId(hProcess.getTenantId())
+//        .key(hProcess.getProcessId())
         .name(hProcess.getProcessName())
+        .category(CATEGORY)
         .addBpmnModel(hProcess.getProcessId() + POST_FIX, bpmnModel)
         .deploy();
   }
 
-  public Deployment dynamicHoliday2(String processName, ParallelDto parallelDto) {
+      public Deployment dynamicHoliday2(String processName, ParallelDto parallelDto) {
     StartEvent startEvent = new StartEvent();
     startEvent.setId("startEvent");
 
@@ -139,7 +134,7 @@ public class DynamicDeployService {
         .createDeployment()
         .addBpmnModel(processName + POST_FIX, bpmnModel)
         .deploy();
-  }
+}
 
 
   public Deployment dynamicHoliday(String processName, String assignee) {
@@ -221,6 +216,7 @@ public class DynamicDeployService {
 
     process.getFlowElements()
         .forEach(System.out::println);
+
 
     System.out.println(process.getDocumentation());
 

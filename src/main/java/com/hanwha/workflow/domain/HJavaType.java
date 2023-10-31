@@ -1,20 +1,14 @@
 package com.hanwha.workflow.domain;
 
-import static org.flowable.bpmn.model.ImplementationType.IMPLEMENTATION_TYPE_CLASS;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.flowable.bpmn.model.*;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.flowable.bpmn.model.EndEvent;
-import org.flowable.bpmn.model.ExclusiveGateway;
-import org.flowable.bpmn.model.FlowElement;
-import org.flowable.bpmn.model.ParallelGateway;
-import org.flowable.bpmn.model.ServiceTask;
-import org.flowable.bpmn.model.StartEvent;
-import org.flowable.bpmn.model.UserTask;
+
+import static org.flowable.bpmn.model.ImplementationType.IMPLEMENTATION_TYPE_CLASS;
 
 @RequiredArgsConstructor
 @Getter
@@ -32,9 +26,6 @@ public enum HJavaType {
     Map<String, Object> taskVariable = task.getTaskVariables();
     if (Objects.nonNull(taskVariable) && Objects.nonNull(taskVariable.get("assignee"))) {
       element.setAssignee(taskVariable.get("assignee").toString());
-    }
-    if (Objects.nonNull(taskVariable) && Objects.nonNull(taskVariable.get("groupCandidate"))) {
-      element.setCandidateGroups(Collections.singletonList(taskVariable.get("groupCandidate").toString()));
     }
     return element;
   }),
@@ -62,6 +53,7 @@ public enum HJavaType {
 
   public FlowElement toFlowElement(HTask task) {
     return apply.andThen(flowElement -> {
+      // apply 이후 로직 수행
       flowElement.setId(task.getId());
       flowElement.setName(task.getName());
       return flowElement;

@@ -1,12 +1,14 @@
 package com.hanwha.workflow.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.Process;
+import org.flowable.bpmn.model.SequenceFlow;
+
+import java.util.List;
 
 /**
  * Bpmn process 객체
@@ -18,6 +20,7 @@ public class HProcess {
   public static final String POST_FIX = ".bpmn20.xml";
   private String processId;
   private String processName;
+  private boolean isExecutable;
 
   private String category;
   private String key;
@@ -30,9 +33,11 @@ public class HProcess {
   @JsonIgnore
   Process process = new Process();
 
-  public HProcess(String processId, String processName, String category, String key, String tenantId, List<HTask> tasks) {
+  public HProcess(String processId, String processName, boolean isExecutable, String category, String key, String tenantId, List<HTask> tasks) {
     this.processId = processId;
     this.processName = processName;
+    // 접미사가 없는 경우 process가 시작되지 않음.
+    this.isExecutable = isExecutable;
     this.tasks = tasks;
     this.category = category;
     this.key = key;
@@ -52,8 +57,16 @@ public class HProcess {
 
     result.addProcess(process);
 
-    tasks.forEach(task -> process.addFlowElement(task.makeFlow()));
-    tasks.forEach(task -> task.incomingToSequenceFlow().forEach(process::addFlowElement));
+    for (HTask hTask : tasks) {
+      process.addFlowElement(hTask.makeFlow());
+    }
+
+    for (HTask task : tasks) {
+      Process process1 = process;
+      for (SequenceFlow flow : task.incomingToSequenceFlow()) {
+        process1.addFlowElement(flow);
+      }
+    }
 
     return result;
   }

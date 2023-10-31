@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 public class HFlowElement {
   private String source;
   private String target;
-  private String expression;
+  private String conditionExpression;
 
   @Override
   public String toString() {
-    return String.format("{%s -> %s : expression: [%s]}", source, target, expression);
+    return String.format("{%s -> %s : expression: [%s]}", source, target, conditionExpression);
   }
 
 

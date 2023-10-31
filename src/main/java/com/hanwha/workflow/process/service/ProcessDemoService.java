@@ -1,27 +1,22 @@
 package com.hanwha.workflow.process.service;
 
-import static com.hanwha.workflow.constants.BpmnConstant.CATEGORY;
-import static com.hanwha.workflow.constants.BpmnConstant.POST_FIX;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.flowable.bpmn.model.BpmnModel;
-import org.flowable.bpmn.model.EndEvent;
-import org.flowable.bpmn.model.ExclusiveGateway;
 import org.flowable.bpmn.model.Process;
-import org.flowable.bpmn.model.SequenceFlow;
-import org.flowable.bpmn.model.ServiceTask;
-import org.flowable.bpmn.model.StartEvent;
-import org.flowable.bpmn.model.UserTask;
+import org.flowable.bpmn.model.*;
 import org.flowable.engine.ProcessEngine;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.hanwha.workflow.constants.BpmnConstant.CATEGORY;
+import static com.hanwha.workflow.constants.BpmnConstant.POST_FIX;
 
 @Service
 @RequiredArgsConstructor

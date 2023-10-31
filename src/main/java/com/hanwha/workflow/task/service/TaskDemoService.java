@@ -1,16 +1,14 @@
 package com.hanwha.workflow.task.service;
 
 import com.hanwha.workflow.task.dto.TaskRetrieveDto;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.flowable.engine.ProcessEngine;
 import org.flowable.engine.TaskService;
+import org.flowable.engine.task.Comment;
 import org.flowable.task.api.Task;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -103,4 +101,19 @@ public class TaskDemoService {
         .list());
   }
 
+  public List<Map<String, Object>> getTasksByProcessInstanceId(String processInstanceId) {
+    return getTasks(processEngine.getTaskService()
+        .createTaskQuery().processInstanceId(processInstanceId)
+        .list());
+  }
+  public Comment addComment(String taskId, String processInstanceId, String comment) {
+    return processEngine.getTaskService()
+        .addComment(taskId, processInstanceId, comment);
+  }
+
+  public List<Comment> getComments(String taskId, String processInstanceId) {
+    return processEngine.getTaskService()
+//        .getProcessInstanceComments(processInstanceId)
+        .getTaskComments(taskId);
+  }
 }
