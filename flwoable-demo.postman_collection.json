@@ -1,0 +1,678 @@
+{
+	"info": {
+		"_postman_id": "a30620d2-9541-4c35-bc56-d58b3ee5b63c",
+		"name": "flwoable-demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11556319"
+	},
+	"item": [
+		{
+			"name": "process",
+			"item": [
+				{
+					"name": "deprecated) deploy-holiday-file",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "0e3a8a61-16a4-4598-a97f-17f2d8618d74",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<definitions xmlns=\"http://www.omg.org/spec/BPMN/20100524/MODEL\"\r\n  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\r\n  xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\"\r\n  xmlns:omgdc=\"http://www.omg.org/spec/DD/20100524/DC\"\r\n  xmlns:omgdi=\"http://www.omg.org/spec/DD/20100524/DI\"\r\n  xmlns:flowable=\"http://flowable.org/bpmn\"\r\n  typeLanguage=\"http://www.w3.org/2001/XMLSchema\"\r\n  expressionLanguage=\"http://www.w3.org/1999/XPath\"\r\n  targetNamespace=\"http://www.flowable.org/processdef\">\r\n\r\n  <process id=\"holidayRequest\" name=\"Holiday Request\" isExecutable=\"true\">\r\n\r\n    <startEvent id=\"startEvent\"/>\r\n    <sequenceFlow sourceRef=\"startEvent\" targetRef=\"approveTask\"/>\r\n\r\n    <userTask id=\"approveTask\" name=\"Approve or reject request\" flowable:description=\"${description}\"  flowable:candidateGroups=\"managers\"/>\r\n    <sequenceFlow sourceRef=\"approveTask\" targetRef=\"decision\"/>\r\n\r\n    <exclusiveGateway id=\"decision\"/>\r\n    <sequenceFlow sourceRef=\"decision\" targetRef=\"externalSystemCall\">\r\n      <conditionExpression xsi:type=\"tFormalExpression\">\r\n        <![CDATA[\r\n          ${approved}\r\n        ]]>\r\n      </conditionExpression>\r\n    </sequenceFlow>\r\n    <sequenceFlow  sourceRef=\"decision\" targetRef=\"sendRejectionMail\">\r\n      <conditionExpression xsi:type=\"tFormalExpression\">\r\n        <![CDATA[\r\n          ${!approved}\r\n        ]]>\r\n      </conditionExpression>\r\n    </sequenceFlow>\r\n\r\n    <serviceTask id=\"externalSystemCall\" name=\"Enter holidays in external system\"\r\n        flowable:class=\"com.example.flowableenginedemo.CallExternalSystemDelegate\"/>\r\n    <sequenceFlow sourceRef=\"externalSystemCall\" targetRef=\"holidayApprovedTask\"/>\r\n\r\n    <userTask id=\"holidayApprovedTask\" name=\"Holiday approved\" flowable:description=\"${description}\" flowable:assignee=\"${employee}\"/>\r\n    <sequenceFlow sourceRef=\"holidayApprovedTask\" targetRef=\"approveEnd\"/>\r\n\r\n    <serviceTask id=\"sendRejectionMail\" name=\"Send out rejection email\"\r\n        flowable:class=\"com.example.flowableenginedemo.SendRejectionMail\"/>\r\n    <sequenceFlow sourceRef=\"sendRejectionMail\" targetRef=\"rejectEnd\"/>\r\n\r\n    <endEvent id=\"approveEnd\"/>\r\n\r\n    <endEvent id=\"rejectEnd\"/>\r\n\r\n  </process>\r\n\r\n</definitions>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/v1/process/holiday",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"process",
+								"holiday"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deprecated) deploy-holiday-text",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "0e3a8a61-16a4-4598-a97f-17f2d8618d74",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<definitions xmlns=\"http://www.omg.org/spec/BPMN/20100524/MODEL\"\r\n  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\r\n  xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\"\r\n  xmlns:omgdc=\"http://www.omg.org/spec/DD/20100524/DC\"\r\n  xmlns:omgdi=\"http://www.omg.org/spec/DD/20100524/DI\"\r\n  xmlns:flowable=\"http://flowable.org/bpmn\"\r\n  typeLanguage=\"http://www.w3.org/2001/XMLSchema\"\r\n  expressionLanguage=\"http://www.w3.org/1999/XPath\"\r\n  targetNamespace=\"http://www.flowable.org/processdef\">\r\n\r\n  <process id=\"holidayRequest_3\" name=\"Holiday Request_3\" isExecutable=\"true\">\r\n\r\n    <startEvent id=\"startEvent\"/>\r\n    <sequenceFlow sourceRef=\"startEvent\" targetRef=\"approveTask\"/>\r\n\r\n    <userTask id=\"approveTask\" name=\"Approve or reject request\" flowable:description=\"${description}\"  flowable:candidateGroups=\"managers\"/>\r\n    <sequenceFlow sourceRef=\"approveTask\" targetRef=\"decision\"/>\r\n\r\n    <exclusiveGateway id=\"decision\"/>\r\n    <sequenceFlow sourceRef=\"decision\" targetRef=\"externalSystemCall\">\r\n      <conditionExpression xsi:type=\"tFormalExpression\">\r\n        <![CDATA[\r\n          ${approved}\r\n        ]]>\r\n      </conditionExpression>\r\n    </sequenceFlow>\r\n    <sequenceFlow  sourceRef=\"decision\" targetRef=\"sendRejectionMail\">\r\n      <conditionExpression xsi:type=\"tFormalExpression\">\r\n        <![CDATA[\r\n          ${!approved}\r\n        ]]>\r\n      </conditionExpression>\r\n    </sequenceFlow>\r\n\r\n    <serviceTask id=\"externalSystemCall\" name=\"Enter holidays in external system\"\r\n        flowable:class=\"com.example.flowableenginedemo.CallExternalSystemDelegate\"/>\r\n    <sequenceFlow sourceRef=\"externalSystemCall\" targetRef=\"holidayApprovedTask\"/>\r\n\r\n    <userTask id=\"holidayApprovedTask\" name=\"Holiday approved\" flowable:description=\"${description}\" flowable:assignee=\"${employee}\"/>\r\n    <sequenceFlow sourceRef=\"holidayApprovedTask\" targetRef=\"approveEnd\"/>\r\n\r\n    <serviceTask id=\"sendRejectionMail\" name=\"Send out rejection email\"\r\n        flowable:class=\"com.example.flowableenginedemo.SendRejectionMail\"/>\r\n    <sequenceFlow sourceRef=\"sendRejectionMail\" targetRef=\"rejectEnd\"/>\r\n\r\n    <endEvent id=\"approveEnd\"/>\r\n\r\n    <endEvent id=\"rejectEnd\"/>\r\n\r\n  </process>\r\n\r\n</definitions>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/v1/process/holidayRequest_3",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"process",
+								"holidayRequest_3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deploy-holiday-java-api",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "0e3a8a61-16a4-4598-a97f-17f2d8618d74",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"processId\": \"holidayRequest_V2\",\r\n  \"processName\": \"Holiday Request\",\r\n  \"tenantId\": \"\",\r\n  \"key\": \"\",\r\n  \"category\": \"\",\r\n  \"tasks\": [\r\n    {\r\n      \"javaType\": \"START_EVENT\",\r\n      \"name\": \"\",\r\n      \"id\": \"startEvent\",\r\n      \"addresses\": [\r\n        {\r\n          \"source\": \"startEvent\",\r\n          \"target\": \"fork\",\r\n          \"conditionExpression\": \"\"\r\n        }\r\n      ],\r\n      \"flowableVariables\": {},\r\n      \"taskVariables\": {}\r\n    },\r\n    {\r\n      \"javaType\": \"PARALLEL_GATEWAY\",\r\n      \"name\": \"started accumulate comment from managers\",\r\n      \"id\": \"fork\",\r\n      \"addresses\": [\r\n        {\r\n          \"source\": \"fork\",\r\n          \"target\": \"parallel1\",\r\n          \"conditionExpression\": \"\"\r\n        },\r\n        {\r\n          \"source\": \"fork\",\r\n          \"target\": \"parallel2\",\r\n          \"conditionExpression\": \"\"\r\n        }\r\n      ],\r\n      \"flowableVariables\": {},\r\n      \"taskVariables\": {}\r\n    },\r\n    {\r\n      \"javaType\": \"USER_TASK\",\r\n      \"name\": \"parallel 1\",\r\n      \"id\": \"parallel1\",\r\n      \"addresses\": [\r\n        {\r\n          \"source\": \"parallel1\",\r\n          \"target\": \"join\",\r\n          \"conditionExpression\": \"\"\r\n        }\r\n      ],\r\n      \"flowableVariables\": {},\r\n      \"taskVariables\": {\r\n        \"assignee\": \"ps1\"\r\n      }\r\n    },\r\n    {\r\n      \"javaType\": \"USER_TASK\",\r\n      \"name\": \"parallel 2\",\r\n      \"id\": \"parallel2\",\r\n      \"addresses\": [\r\n        {\r\n          \"source\": \"parallel2\",\r\n          \"target\": \"join\",\r\n          \"conditionExpression\": \"\"\r\n        }\r\n      ],\r\n      \"flowableVariables\": {},\r\n      \"taskVariables\": {\r\n        \"assignee\": \"ps2\"\r\n      }\r\n    },\r\n    {\r\n      \"javaType\": \"PARALLEL_GATEWAY\",\r\n      \"name\": \"joining accumulate comment from managers\",\r\n      \"id\": \"join\",\r\n      \"addresses\": [\r\n        {\r\n          \"source\": \"join\",\r\n          \"target\": \"approvedTask\",\r\n          \"conditionExpression\": \"\"\r\n        }\r\n      ],\r\n      \"flowableVariables\": {},\r\n      \"taskVariables\": {}\r\n    },\r\n    {\r\n      \"javaType\": \"USER_TASK\",\r\n      \"name\": \"review comments\",\r\n      \"id\": \"approvedTask\",\r\n      \"addresses\": [\r\n        {\r\n          \"source\": \"approvedTask\",\r\n          \"target\": \"decision\",\r\n          \"conditionExpression\": \"\"\r\n        }\r\n      ],\r\n      \"flowableVariables\": {},\r\n      \"taskVariables\": {\r\n        \"groupCandidate\": \"MANAGERS\"\r\n      }\r\n    },\r\n    {\r\n      \"javaType\": \"EXCLUSIVE_GATEWAY\",\r\n      \"id\": \"decision\",\r\n      \"addresses\": [\r\n        {\r\n          \"source\": \"decision\",\r\n          \"target\": \"externalSystemCall\",\r\n          \"conditionExpression\": \"${approved}\"\r\n        },\r\n        {\r\n          \"source\": \"decision\",\r\n          \"target\": \"sendRejectMail\",\r\n          \"conditionExpression\": \"${!approved}\"\r\n        }\r\n      ],\r\n      \"flowableVariables\": {},\r\n      \"taskVariable\": {}\r\n    },\r\n    {\r\n      \"javaType\": \"SERVICE_TASK\",\r\n      \"id\": \"externalSystemCall\",\r\n      \"name\": \"external System Call\",\r\n      \"addresses\": [\r\n        {\r\n          \"source\": \"externalSystemCall\",\r\n          \"target\": \"holidayApprovedTask\",\r\n          \"conditionExpression\": \"\"\r\n        }\r\n      ],\r\n      \"flowableVariables\": {\r\n        \"implementationType\": \"class\",\r\n        \"implementation\": \"com.hanwha.workflow.delegate.CallExternalSystemDelegate\"\r\n      },\r\n      \"taskVariable\": {}\r\n    },\r\n    {\r\n      \"javaType\": \"USER_TASK\",\r\n      \"id\": \"holidayApprovedTask\",\r\n      \"name\": \"finally approved holiday\",\r\n      \"addresses\": [\r\n        {\r\n          \"source\": \"holidayApprovedTask\",\r\n          \"target\": \"approveEnd\",\r\n          \"conditionExpression\": \"\"\r\n        }\r\n      ],\r\n      \"flowableVariables\": {},\r\n      \"taskVariable\": {\r\n        \"assignee\": \"final\"\r\n      }\r\n    },\r\n    {\r\n      \"javaType\": \"SERVICE_TASK\",\r\n      \"id\": \"sendRejectMail\",\r\n      \"name\": \"send reject mail\",\r\n      \"addresses\": [\r\n        {\r\n          \"source\": \"sendRejectMail\",\r\n          \"target\": \"approveEnd\",\r\n          \"conditionExpression\": \"\"\r\n        }\r\n      ],\r\n      \"flowableVariables\": {\r\n        \"implementationType\": \"class\",\r\n        \"implementation\": \"com.hanwha.workflow.delegate.SendRejectMail\"\r\n      },\r\n      \"taskVariable\": {}\r\n    },\r\n    {\r\n      \"javaType\": \"END_EVENT\",\r\n      \"id\": \"approveEnd\",\r\n      \"name\": \"End Process of a Holiday request\",\r\n      \"addresses\": [],\r\n      \"flowableVariables\": {},\r\n      \"taskVariable\": {}\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/v1/process/dynamic",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"process",
+								"dynamic"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deprecated) deploy-article-review",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "0e3a8a61-16a4-4598-a97f-17f2d8618d74",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<definitions\r\n\txmlns=\"http://www.omg.org/spec/BPMN/20100524/MODEL\"\r\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n\txmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\r\n\txmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\"\r\n\txmlns:omgdc=\"http://www.omg.org/spec/DD/20100524/DC\"\r\n\txmlns:omgdi=\"http://www.omg.org/spec/DD/20100524/DI\"\r\n\txmlns:flowable=\"http://flowable.org/bpmn\"\r\n\ttypeLanguage=\"http://www.w3.org/2001/XMLSchema\"\r\n\texpressionLanguage=\"http://www.w3.org/1999/XPath\"\r\n\ttargetNamespace=\"http://www.flowable.org/processdef\">\r\n\t<process id=\"articleReview\"\tname=\"A simple process for article review.\" isExecutable=\"true\">\r\n\t\t<startEvent id=\"start\" />\r\n\t\t<sequenceFlow sourceRef=\"start\" targetRef=\"reviewArticle\" />\r\n\t\t<userTask id=\"reviewArticle\" name=\"Review the submitted tutorial\" flowable:candidateGroups=\"editors\" />\r\n\t\t<sequenceFlow sourceRef=\"reviewArticle\" targetRef=\"decision\" />\r\n\t\t<exclusiveGateway id=\"decision\" />\r\n\t\t<sequenceFlow sourceRef=\"decision\" targetRef=\"tutorialApproved\">\r\n\t\t\t<conditionExpression xsi:type=\"tFormalExpression\">\r\n\t\t        <![CDATA[\r\n\t\t          ${approved}\r\n\t\t        ]]>\r\n\t\t\t</conditionExpression>\r\n\t\t</sequenceFlow>\r\n\t\t<sequenceFlow sourceRef=\"decision\" targetRef=\"tutorialRejected\">\r\n\t\t\t<conditionExpression xsi:type=\"tFormalExpression\">\r\n\t\t        <![CDATA[\r\n\t\t          ${!approved}\r\n\t\t        ]]>\r\n\t\t\t</conditionExpression>\r\n\t\t</sequenceFlow>\r\n\t\t<serviceTask id=\"tutorialApproved\" name=\"Publish the approved tutorial.\"\r\n\t\t\tflowable:class=\"com.process.floable.service.PublishArticleService\" />\r\n\t\t<sequenceFlow sourceRef=\"tutorialApproved\" targetRef=\"end\" />\r\n\t\t<serviceTask id=\"tutorialRejected\" name=\"Send out rejection email\"\r\n\t\t\tflowable:class=\"com.process.floable.service.SendMailService\" />\r\n\t\t<sequenceFlow sourceRef=\"tutorialRejected\" targetRef=\"end\" />\r\n\t\t<endEvent id=\"end\" />\r\n\t</process>\r\n</definitions>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/v1/process/articleReview/assignee/auto",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"process",
+								"articleReview",
+								"assignee",
+								"auto"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "start-holiday",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "0e3a8a61-16a4-4598-a97f-17f2d8618d74",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://api.flowable.psawesome.xyz/process/assignee/ps?holidays=7&description=Lia birthday23",
+							"protocol": "https",
+							"host": [
+								"api",
+								"flowable",
+								"psawesome",
+								"xyz"
+							],
+							"path": [
+								"process",
+								"assignee",
+								"ps"
+							],
+							"query": [
+								{
+									"key": "holidays",
+									"value": "7"
+								},
+								{
+									"key": "description",
+									"value": "Lia birthday23"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deprecated) start-article",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "0e3a8a61-16a4-4598-a97f-17f2d8618d74",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/v1/process/articleReview?author=ps&url=psawesome.xyz",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"process",
+								"articleReview"
+							],
+							"query": [
+								{
+									"key": "author",
+									"value": "ps"
+								},
+								{
+									"key": "url",
+									"value": "psawesome.xyz"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get history",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/v1/process/0",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"process",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "start-holiday",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "0e3a8a61-16a4-4598-a97f-17f2d8618d74",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/v1/process/holidayRequest_V2/assignee/ps1?holidays=9&description=Rich brithday&employee=ps1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"process",
+								"holidayRequest_V2",
+								"assignee",
+								"ps1"
+							],
+							"query": [
+								{
+									"key": "holidays",
+									"value": "9"
+								},
+								{
+									"key": "description",
+									"value": "Rich brithday"
+								},
+								{
+									"key": "employee",
+									"value": "ps1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "tasks",
+			"item": [
+				{
+					"name": "list",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "0e3a8a61-16a4-4598-a97f-17f2d8618d74",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/v1/tasks",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list-by-process_instance_id",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "0e3a8a61-16a4-4598-a97f-17f2d8618d74",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/v1/tasks/process/107504",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"tasks",
+								"process",
+								"107504"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "variables",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/v1/tasks/87522/variables",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"tasks",
+								"87522",
+								"variables"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "assignee",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "0e3a8a61-16a4-4598-a97f-17f2d8618d74",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/v1/tasks/assignee/final",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"tasks",
+								"assignee",
+								"final"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "changed-assignee",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "296ad299-71e2-4a8a-aa98-5a0546b86e4a",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/v1/tasks/107520/assignee/ps",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"tasks",
+								"107520",
+								"assignee",
+								"ps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add-comment",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "296ad299-71e2-4a8a-aa98-5a0546b86e4a",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/v1/tasks/107516/process/107504/comments?comment=it is not enough",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"tasks",
+								"107516",
+								"process",
+								"107504",
+								"comments"
+							],
+							"query": [
+								{
+									"key": "comment",
+									"value": "it is not enough"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list-comment",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "296ad299-71e2-4a8a-aa98-5a0546b86e4a",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/v1/tasks/107516/comments?processInstanceId",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"tasks",
+								"107516",
+								"comments"
+							],
+							"query": [
+								{
+									"key": "processInstanceId",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "complete",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "00453c30-2412-4a44-9747-cd13e10dc7a9",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/v1/tasks/35019?approved=true",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"tasks",
+								"35019"
+							],
+							"query": [
+								{
+									"key": "approved",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "complete",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "00453c30-2412-4a44-9747-cd13e10dc7a9",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/v1/tasks/112518?approved=true",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"v1",
+								"tasks",
+								"112518"
+							],
+							"query": [
+								{
+									"key": "approved",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
